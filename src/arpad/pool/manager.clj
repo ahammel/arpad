@@ -17,9 +17,9 @@
                  (update-pool player-a player-b score)
                  (update-in [:players (:id player-a) :total-games] inc)
                  (update-in [:players (:id player-b) :total-games] inc)))
-      (go (await pool-agent)
-          (>! (:player-report out-chans)
-              (lookup-player @pool-agent player-a player-b))))
+      (go (when (await-for 10000 pool-agent)
+            (>! (:player-report out-chans)
+                (lookup-player @pool-agent player-a player-b)))))
 
     :else
     (println "no match")             ; TODO: log an error or something
