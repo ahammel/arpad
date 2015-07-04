@@ -5,4 +5,6 @@
   ([a b]
    (close? a b 0.001))
   ([a b tollerance]
-   (< (Math/abs (- a b)) tollerance)))
+   (if (or (nil? a) (nil? b))
+     false
+     (< (Math/abs (- a b)) tollerance))))

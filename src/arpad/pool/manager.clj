@@ -1,0 +1,33 @@
+(ns arpad.pool.manager
+  (:require [clojure.core.async :as async :refer [<! >! go]]
+            [clojure.core.match           :refer [match]]
+            [arpad.pool                   :refer [update-pool lookup-player]]))
+
+(defn make-output-channels []
+  {:player-report (async/chan)})
+
+(defn respond
+  "Respond to a message"
+  [msg pool-agent out-chans]
+  (match [msg]
+    [{:new-game [player-a player-b score]}]
+    (do
+      (send pool-agent
+            #(-> %
+                 (update-pool player-a player-b score)
+                 (update-in [:players (:id player-a) :total-games] inc)
+                 (update-in [:players (:id player-b) :total-games] inc)))
+      (go (await pool-agent)
+          (>! (:player-report out-chans)
+              (lookup-player @pool-agent player-a player-b))))
+
+    :else
+    (println "no match")             ; TODO: log an error or something
+    ))
+
+(defn spawn-pool-manager
+  [pool-agent in-chan]
+  (let [out-chans (make-output-channels)]
+    (go (while true
+          (respond (<! in-chan) pool-agent out-chans)))
+    out-chans))
