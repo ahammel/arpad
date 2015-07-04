@@ -41,3 +41,20 @@
      (-> pool'
          (assoc-in [:players (:id winner)] a')
          (assoc-in [:players (:id loser)]  b')))))
+
+(defn lookup-player
+  "Return a player's information given an ID"
+  [pool & players]
+  {:pre [(contains? pool :players)
+         (every? #(contains? % :id) players)]}
+  (letfn [(assoc-player [map player]
+            (assoc map
+              (:id player)
+              (get-in pool [:players (:id player)])))]
+    (reduce assoc-player {} players)))
+
+(defn standings
+  "Return a map of each player in the pool sorted by rating"
+  [pool]
+  {:pre [(contains? pool :players)]}
+  (into (sorted-map-by (comp > :rating)) (:players pool)))
