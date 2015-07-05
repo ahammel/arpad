@@ -54,7 +54,11 @@
     (reduce assoc-player {} players)))
 
 (defn standings
-  "Return a map of each player in the pool sorted by rating"
-  [pool]
-  {:pre [(contains? pool :players)]}
-  (into (sorted-map-by (comp > :rating)) (:players pool)))
+  "Sort the players in the pool by rating in decreasing order. If a
+  limit is given, only that many responses will be generated (not
+  counting ignored players)."
+  ([pool]
+   {:pre [(contains? pool :players)]}
+   (sort-by (comp :rating val) > (:players pool)))
+  ([pool limit]
+   (take limit (standings pool))))

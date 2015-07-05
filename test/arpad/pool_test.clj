@@ -39,8 +39,20 @@
                           {:id :cal})
            {:alice {:rating 1500}
             :bob   nil
-            :cal   {:rating 1400}})))
-  (testing "Report standings"
-    (is (= (standings alice-bob-pool)
-           (sorted-map :alice {:rating 1500}
-                       :cal   {:rating 1400})))))
+            :cal   {:rating 1400}}))))
+
+(deftest report-standings-test
+  (let [pool {:players {:bruce {:rating 200}
+                        :abby  {:rating 100}
+                        :dana  {:rating 400}
+                        :clive {:rating 300}}}]
+    (testing "Report standings"
+      (is (= (into [] (standings pool))
+             [[:dana  {:rating 400}]
+              [:clive {:rating 300}]
+              [:bruce {:rating 200}]
+              [:abby  {:rating 100}]])))
+    (testing "Report top 2"
+      (is (= (into [] (standings pool 2))
+             [[:dana  {:rating 400}]
+              [:clive {:rating 300}]])))))
