@@ -1,7 +1,9 @@
 (ns arpad.pool.manager
   (:require [clojure.core.async :as async :refer [<! >! go]]
             [clojure.core.match           :refer [match]]
-            [arpad.pool                   :refer [update-pool lookup-player]]))
+            [arpad.pool                   :refer [lookup-player
+                                                  update-pool
+                                                  standings]]))
 
 (defn make-output-channels []
   {:player-report (async/chan)})
@@ -20,6 +22,12 @@
       (go (when (await-for 10000 pool-agent)
             (>! (:player-report out-chans)
                 (lookup-player @pool-agent player-a player-b)))))
+
+    [{:standings n}]
+    (go (>! (:player-report out-chans)
+            (if n
+              (standings @pool-agent n)
+              (standings @pool-agent))))
 
     :else
     (println "no match")             ; TODO: log an error or something
