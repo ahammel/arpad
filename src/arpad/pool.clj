@@ -9,7 +9,10 @@
 
 (defn new-player
   [defaults]
-  (merge {:rating 0 :total-games 0 :peak-rating 0} defaults))
+  (merge {:rating 0
+          :total-games 0
+          :peak-rating 0
+          :ignore? true} defaults))
 
 (defn init-player
   ([pool player]
@@ -43,15 +46,38 @@
          (assoc-in [:players (:id loser)]  b')))))
 
 (defn lookup-player
-  "Return a player's information given an ID"
+  "Return a player's information given an ID. No information is
+  returned if the player is being ignored."
   [pool & players]
   {:pre [(contains? pool :players)
          (every? #(contains? % :id) players)]}
   (letfn [(assoc-player [map player]
-            (assoc map
-              (:id player)
-              (get-in pool [:players (:id player)])))]
+            (if-not (get-in pool [:players (:id player) :ignore?])
+              (assoc map
+                (:id player)
+                (get-in pool [:players (:id player)]))
+              map))]
     (reduce assoc-player {} players)))
+
+(defn- modify-ignore-player
+  [pool player ignore-status]
+  {:pre [(contains? pool :players)
+         (contains? player :id)]}
+  (-> pool
+      (init-player player)
+      (assoc-in [:players (:id player) :ignore?] ignore-status)))
+
+(defn ignore-player
+  "Return the pool modified such that the player will be ignored. The
+  player will be initialized if not already in the pool"
+  [pool player]
+  (modify-ignore-player pool player true))
+
+(defn follow-player
+  "Modify the pool such that the player's ratings will be
+  followed. The player will be initialized if not already in the pool"
+  [pool player]
+  (modify-ignore-player pool player false))
 
 (defn standings
   "Sort the players in the pool by rating in decreasing order. If a
@@ -59,6 +85,8 @@
   counting ignored players)."
   ([pool]
    {:pre [(contains? pool :players)]}
-   (sort-by (comp :rating val) > (:players pool)))
+   (->> (:players pool)
+        (remove (comp :ignore? second))
+        (sort-by (comp :rating val) >)))
   ([pool limit]
    (take limit (standings pool))))
