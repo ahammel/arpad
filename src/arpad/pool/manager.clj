@@ -1,41 +1,42 @@
 (ns arpad.pool.manager
-  (:require [clojure.core.async :as async :refer [<! >! go]]
+  (:require [clojure.core.async :as async :refer [<! >! go-loop]]
             [clojure.core.match           :refer [match]]
             [arpad.pool                   :refer [lookup-player
                                                   update-pool
                                                   standings]]))
 
-(defn make-output-channels []
-  {:player-report (async/chan)})
-
-(defn respond
-  "Respond to a message"
-  [msg pool-agent out-chans]
+(defn- mutate-pool
+  "Generate a new pool, depending on the contents of the message"
+  [pool msg]
   (match [msg]
     [{:new-game [player-a player-b score]}]
-    (do
-      (send pool-agent
-            #(-> %
-                 (update-pool player-a player-b score)
-                 (update-in [:players (:id player-a) :total-games] inc)
-                 (update-in [:players (:id player-b) :total-games] inc)))
-      (go (when (await-for 10000 pool-agent)
-            (>! (:player-report out-chans)
-                (lookup-player @pool-agent player-a player-b)))))
+    (-> pool
+        (update-pool player-a player-b score)
+        (update-in [:players (:id player-a) :total-games] inc)
+        (update-in [:players (:id player-b) :total-games] inc))
 
+    :else pool))
+
+(defn- gen-report
+  "Generate a report based on the contents of the message"
+  [pool msg]
+  (match [msg]
     [{:standings n}]
-    (go (>! (:player-report out-chans)
-            (if n
-              (standings @pool-agent n)
-              (standings @pool-agent))))
+    (if n (standings pool n) (standings pool))
 
-    :else
-    (println "no match")             ; TODO: log an error or something
-    ))
+    [{:new-game [player-a player-b _]}]
+    (lookup-player pool player-a player-b)
+
+    :else nil))
 
 (defn spawn-pool-manager
-  [pool-agent in-chan]
-  (let [out-chans (make-output-channels)]
-    (go (while true
-          (respond (<! in-chan) pool-agent out-chans)))
-    out-chans))
+  [init-pool in-chan out-chans]
+  {:pre [(contains? out-chans :player-report)]}
+  (go-loop [msg (<! in-chan)
+            pool init-pool]
+    (when msg
+      (let [pool' (mutate-pool pool msg)
+            report (gen-report pool' msg)]
+        (when report
+          (>! (:player-report out-chans) report))
+        (recur (<! in-chan) pool')))))
