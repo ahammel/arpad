@@ -1,13 +1,15 @@
 (ns arpad.pool-manager-test
   (:require [clojure.test       :refer :all]
-            [clojure.core.async :refer [>! <! <!!
-                                        alts!! close! chan go timeout]]
+            [clojure.core.async :refer [>! <! <!!  alts!! close!
+                                        dropping-buffer chan go
+                                        timeout]]
             [arpad.test-common  :refer [close?]]
             [arpad.pool.manager :refer :all]))
 
 (def init-pool {:players {} :k (constantly 40) :default-rating 1000})
 (def in-chan (atom nil))
-(def out-chans {:player-report (chan)})
+(def out-chans {:player-report (chan)
+                :new-state (chan (dropping-buffer 10))})
 
 (defn- get-result
   [chan]

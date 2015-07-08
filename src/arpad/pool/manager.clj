@@ -45,7 +45,8 @@
 
 (defn spawn-pool-manager
   [init-pool in-chan out-chans]
-  {:pre [(contains? out-chans :player-report)]}
+  {:pre [(contains? out-chans :player-report)
+         (contains? out-chans :new-state)]}
   (go-loop [msg (<! in-chan)
             pool init-pool]
     (when msg
@@ -53,4 +54,6 @@
             report (gen-report pool' msg)]
         (when report
           (>! (:player-report out-chans) report))
+        (when (not= pool pool')
+          (>! (:new-state out-chans) pool'))
         (recur (<! in-chan) pool')))))
