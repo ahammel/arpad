@@ -1,7 +1,9 @@
 (ns arpad.pool-test
   (:require [clojure.test      :refer :all]
+            [schema.core       :as     s]
             [arpad.test-common :refer [close?]]
-            [arpad.pool        :refer :all]))
+            [arpad.pool        :refer :all]
+            [arpad.pool.schema :refer :all]))
 
 (def empty-pool
   {:players        {}
@@ -56,3 +58,17 @@
       (is (= (into [] (standings pool 2))
              [[:dana  {:rating 400}]
               [:clive {:rating 300}]])))))
+
+(deftest pool-schema-test
+  (testing "Empty pool matches schema"
+    (is (nil? (s/check Pool
+                       {:players {}
+                        :k :uscf
+                        :default-rating 0}))))
+  (testing "Pool with some players matches schema"
+    (is (nil? (s/check Pool
+                       {:players {:mary   {:rating 1000}
+                                  :clarie {:rating 2000.1}
+                                  :bob    {:rating 3000}}
+                        :k :fide
+                        :default-rating 1000.0})))))

@@ -6,15 +6,16 @@
 (defn persist
   "Write the target string to a file, moving the original file to
   'filename.bak'."
-  [filename contents]
+  [filename pool]
   (let [f (file filename)
-        bak (file (str filename ".bak"))]
+        bak (file (str filename ".bak"))
+        pool-json (json/write-str pool)]
     (.renameTo f bak)
-    (spit filename contents)))
+    (spit filename pool-json)))
 
 (defn spawn-persistor
   [filename chan]
   (go-loop [pool (<! chan)]
     (when pool
-      (persist filename (json/write-str pool)))))
+      (persist filename pool))))
   
