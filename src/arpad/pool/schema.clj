@@ -12,8 +12,9 @@
 (def Pool
   {(s/required-key :players)        {s/Any Player}
    (s/required-key :default-rating) s/Num
-   (s/required-key :k)              (s/enum :fide :uscf)})
-
+   (s/required-key :k)              (s/either
+                                      (s/enum :fide :uscf)
+                                      s/Num)})
 
 (def json->Pool
   (coercer Pool json-coercion-matcher))

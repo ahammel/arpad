@@ -7,13 +7,13 @@
 
 (def empty-pool
   {:players        {}
-   :k              (constantly 40)
+   :k              40
    :default-rating 1400})
 
 (def alice-bob-pool
   {:players        {:cal   {:rating 1400}
                     :alice {:rating 1500}}
-   :k              (constantly 40)
+   :k              40
    :default-rating 1000})
 
 (deftest update-pool-test

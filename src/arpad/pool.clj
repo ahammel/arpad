@@ -1,5 +1,6 @@
 (ns arpad.pool
-  (:require [arpad.elo :refer [new-ratings]]))
+  (:require [arpad.elo :refer [new-ratings]]
+            [arpad.k   :refer [k-functions]]))
 
 (defn adjust-ratings
   [player-a player-b score k]
@@ -26,6 +27,17 @@
   ([pool player & more]
    (reduce init-player (init-player pool player) more)))
 
+(defn get-k
+  [pool]
+  {:pre [(contains? pool :k)
+         (if (keyword? (:k pool))
+           (contains? k-functions (:k pool))
+           (number? (:k pool)))]}
+  (let [k (:k pool)]
+    (if (keyword? k)
+      (k k-functions)
+      (constantly k))))
+
 (defn update-pool
   "Update a pool given the results of a game (defaults to first player wins)"
   ([pool winner loser]
@@ -40,7 +52,8 @@
    (let [pool' (init-player pool winner loser)
          player-a (get (:players pool') (:id winner))
          player-b (get (:players pool') (:id loser))
-         [a' b']  (adjust-ratings player-a player-b score (:k pool))]
+         k        (get-k pool)
+         [a' b']  (adjust-ratings player-a player-b score k)]
      (-> pool'
          (assoc-in [:players (:id winner)] a')
          (assoc-in [:players (:id loser)]  b')))))

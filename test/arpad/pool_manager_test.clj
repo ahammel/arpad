@@ -6,7 +6,7 @@
             [arpad.test-common  :refer [close?]]
             [arpad.pool.manager :refer :all]))
 
-(def init-pool {:players {} :k (constantly 40) :default-rating 1000})
+(def init-pool {:players {} :k 40 :default-rating 1000})
 (def in-chan (atom nil))
 (def out-chans {:player-report (chan)
                 :new-state (chan (dropping-buffer 10))})
