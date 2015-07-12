@@ -10,7 +10,7 @@
    (s/optional-key :peak-rating) s/Num})
 
 (def Pool
-  {(s/required-key :players)        {s/Any Player}
+  {(s/required-key :players)        {s/Keyword Player}
    (s/required-key :default-rating) s/Num
    (s/required-key :k)              (s/either
                                       (s/enum :fide :uscf)
