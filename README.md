@@ -34,8 +34,6 @@ For funzies, to learn [clojure.core.async](https://github.com/clojure/core.async
 
 ### Next
 
-* Persist the pool to disk
-* Read the pool from disk at startup
 * Parse natual-lanugage-like commands
 * [Slack](https://slack.com/) integration
 
