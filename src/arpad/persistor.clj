@@ -18,4 +18,3 @@
   (go-loop [pool (<! chan)]
     (when pool
       (persist filename pool))))
-  

@@ -22,5 +22,3 @@
         r'a (+ (:rating player-a) (* (k player-a) result-a))
         r'b (+ (:rating player-b) (* (k player-b) result-b))]
     [r'a, r'b]))
-
-

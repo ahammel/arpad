@@ -40,4 +40,3 @@
                              (constantly 40))]
       (is (close? a 1016 1))
       (is (close? b 1383 1)))))
-
