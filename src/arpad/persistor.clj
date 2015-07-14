@@ -29,4 +29,3 @@
     (when pool
       (persist filename pool)
       (recur (<!! chan)))))
-

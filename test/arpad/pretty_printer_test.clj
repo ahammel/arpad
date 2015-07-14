@@ -1,7 +1,7 @@
 (ns arpad.pretty-printer-test
   (:require [clojure.test :refer :all]
             [clojure.string :as string]
-            [aprad.pretty-printer.english :as eng]))
+            [arpad.pretty-printer.english :as eng]))
 
 (deftest english-pprint-test
   (testing "Follow message"
