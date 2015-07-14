@@ -10,13 +10,13 @@
   [string]
   (match [(insta/parse parser string)]
     [[:Command [:NewGame [:Player a] [:Player b]]]]
-    {:new-game [(keyword a) (keyword b) 1]}
+    {:new-game [{:id (keyword a)} {:id (keyword b)} 1]}
 
     [[:Command [:Follow [:Player p]]]]
-    {:follow (keyword p)}
+    {:follow {:id (keyword p)}}
 
     [[:Command [:Ignore [:Player p]]]]
-    {:ignore (keyword p)}
+    {:ignore {:id (keyword p)}}
 
     [[:Command [:Standings]]]
     {:standings nil}

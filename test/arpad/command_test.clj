@@ -5,13 +5,13 @@
 (deftest english-commands-test
   (testing "new game"
     (is (= (eng/str->Command "arpad: @masoud beat @ajh")
-           {:new-game [:masoud :ajh 1]})))
+           {:new-game [{:id :masoud} {:id :ajh} 1]})))
   (testing "follow"
     (is (= (eng/str->Command "arpad: follow @lola")
-           {:follow :lola})))
+           {:follow {:id :lola}})))
   (testing "unfollow"
     (is (= (eng/str->Command "arpad ignore @bob")
-           {:ignore :bob})))
+           {:ignore {:id :bob}})))
   (testing "standings"
     (is (= (eng/str->Command "arpad: standings")
            {:standings nil}))
