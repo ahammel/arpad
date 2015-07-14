@@ -3,13 +3,17 @@
             [clojure.data.json :as json]
             [arpad.pool.schema :refer [json->Pool]]))
 
-(defn- exists? [file-name]
-  (.exists (io/file file-name)))
+(defn- exists?
+  "Returns 'true' if 'filename' is a readable file."
+  [filename]
+  (.exists (io/file filename)))
 
 (defn load-pool
   "Loads a pool, given a file containing the pool in JSON
-  format."
-  [file-name]
-  (-> (slurp file-name)
-      (json/read-str :key-fn keyword)
-      (json->Pool)))
+  format. If :throw? is false, return nil if the file does not
+  exist (default: true)."
+  [filename & {:keys [throw?] :or {throw? true}}]
+  (when (or throw? (exists? filename))
+    (-> (slurp filename)
+        (json/read-str :key-fn keyword)
+        (json->Pool))))
