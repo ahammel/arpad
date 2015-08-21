@@ -1,6 +1,6 @@
 (ns arpad.pool.schema
-  (:require [schema.core :as s]
-            [schema.coerce :refer [coercer json-coercion-matcher]]))
+  (:require [schema.coerce :refer [coercer json-coercion-matcher]]
+            [schema.core :as s]))
 
 (def Player
   "Player data as represented in a pool"

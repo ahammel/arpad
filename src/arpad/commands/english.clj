@@ -1,7 +1,7 @@
 (ns arpad.commands.english
-  (:require [clojure.java.io    :as io]
-            [clojure.core.match :refer [match]]
-            [instaparse.core    :as insta]))
+  (:require [clojure.core.match :refer [match]]
+            [clojure.java.io :as io]
+            [instaparse.core :as insta]))
 
 (def parser
   (insta/parser (io/resource "english.bnf")))

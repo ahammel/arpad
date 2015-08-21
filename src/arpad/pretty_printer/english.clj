@@ -1,8 +1,8 @@
 (ns arpad.pretty-printer.english
   (:require [clojure.core.async :as async]
             [clojure.core.match :refer [match]]
-            [clojure.string :as string]
-            [clojure.pprint :refer [cl-format]]))
+            [clojure.pprint :refer [cl-format]]
+            [clojure.string :as string]))
 
 (defn- id->str
   "Convert a player id (keyword) to a string"

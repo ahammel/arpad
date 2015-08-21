@@ -1,6 +1,6 @@
 (ns arpad.pool
   (:require [arpad.elo :refer [new-ratings]]
-            [arpad.k   :refer [k-functions]]))
+            [arpad.k :refer [k-functions]]))
 
 (defn adjust-ratings
   [player-a player-b score k]

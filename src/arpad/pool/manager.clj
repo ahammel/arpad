@@ -7,7 +7,7 @@
                                                   update-pool
                                                   standings]]))
 
-(defn- mutate-pool
+(defn mutate-pool
   "Generate a new pool, depending on the contents of the message"
   [pool msg]
   (match [msg]
@@ -25,7 +25,7 @@
 
     :else pool))
 
-(defn- gen-report
+(defn gen-report
   "Generate a report based on the contents of the message"
   [pool msg]
   (match [msg]
@@ -62,8 +62,7 @@
     (cond
      msg (let [pool' (mutate-pool pool msg)
                report (gen-report pool' msg)]
-           (when (not= pool pool')
-             (>! (:new-state out-chans) pool'))
+           (>! (:new-state out-chans) pool')
            (>! (:player-report out-chans) report)
            (recur (<! in-chan) pool'))
      close? (doseq [c (vals out-chans)]

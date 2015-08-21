@@ -1,7 +1,7 @@
 (ns arpad.pool.load
-  (:require [clojure.java.io   :as io]
+  (:require [arpad.pool.schema :refer [json->Pool]]
             [clojure.data.json :as json]
-            [arpad.pool.schema :refer [json->Pool]]))
+            [clojure.java.io :as io]))
 
 (defn- exists?
   "Returns 'true' if 'filename' is a readable file."
