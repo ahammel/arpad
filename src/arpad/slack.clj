@@ -1,26 +1,31 @@
 (ns arpad.slack
-  (:require [arpad.pool.load :refer [load-pool]]
+  (:gen-class)
+  (:require [arpad.commands.english :refer [str->Command]]
+            [arpad.pool.load :refer [load-pool]]
             [arpad.pool.manager :refer [spawn-pool-manager]]
             [arpad.pool.schema :refer [json->Pool]]
             [arpad.persistor :refer [spawn-persistor]]
             [clojure.data.json :as json]
             [clojure.core.async :refer [<! >! >!! alts!! chan go-loop
                                         sliding-buffer timeout]]
+            [clojure.tools.logging :as log]
+            [clojure.pprint :refer [pprint]]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-            [ring.middleware.json :refer [wrap-json-response]]))
+            [ring.middleware.json :refer [wrap-json-response]]
+            [ring.middleware.params :refer [wrap-params]]))
 
 (defonce slack-parser-chan (chan))
 (defonce report-chan (chan))
-(def pool-file "~/arpad-pool.json")
+(def pool-file (str (System/getenv "HOME") "/arpad-pool.json"))
 
-(defn- parse-slack-request
-  [s]
-  (json/read-str s)
-  ;; ^ Wrong
-  )
+(defn- parse-slack-request [form]
+  (if-let [msg (get form :text)]
+    (let [cmd (str->Command msg)]
+      (if-not (:error cmd)
+        cmd))))
 
 (defn error-msg
   [cmd]
@@ -32,15 +37,18 @@
          (contains? out-chans :pool-manager)]}
   (go-loop [in (<! in-chan)]
     (when in
+      (log/info "Got parse request: " in)
       (if-let [cmd (parse-slack-request in)]
-        (>! (:pool-manager  out-chans) cmd)
+        (do (log/info "Send command: " cmd)
+            (>! (:pool-manager  out-chans) cmd))
         (>! (:player-report out-chans) (error-msg in)))
       (recur (<! in-chan)))))
 
 (defroutes app-routes
   (POST "/v1/arpad" request
-        (let [_ (>!! slack-parser-chan (:body request))
-              [resp _] (alts!! [report-chan (timeout 10000)])]
+        (pprint request)
+        (>!! slack-parser-chan (:params request))
+        (let [[resp _] (alts!! [report-chan (timeout 10000)])]
           (if resp
             {:body resp}
             {:status 503 :body "Request timed out"})))
@@ -55,14 +63,16 @@
                       {:players {}
                        :k :uscf
                        :default-rating 750})]
-    (spawn-pool-manager (:pool-manager channels) channels)
+    (spawn-pool-manager init-pool (:pool-manager channels) channels)
     (spawn-persistor pool-file (:new-state channels))
     (spawn-parser (:slack-command-parser channels) channels)))
 
 (def app
   (-> (wrap-defaults app-routes api-defaults)
+      (wrap-params)
       (wrap-json-response)))
 
 (defn -main
   [& args]
+  (init)
   (run-jetty #'app {:port 1128}))

@@ -8,6 +8,7 @@
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.3.0-alpha4"]
+                 [org.clojure/tools.logging "0.3.1"]
                  [org.clojure/data.json "0.2.6"]
                  [ring/ring-jetty-adapter "1.4.0"]
                  [prismatic/schema "0.4.3"]
