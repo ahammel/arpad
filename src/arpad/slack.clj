@@ -5,6 +5,7 @@
             [arpad.pool.manager :refer [spawn-pool-manager]]
             [arpad.pool.schema :refer [json->Pool]]
             [arpad.persistor :refer [spawn-persistor]]
+            [arpad.pretty-printer.english :refer [pretty-print]]
             [clojure.data.json :as json]
             [clojure.core.async :refer [<! >! >!! alts!! chan go-loop
                                         sliding-buffer timeout]]
@@ -50,7 +51,7 @@
         (>!! slack-parser-chan (:params request))
         (let [[resp _] (alts!! [report-chan (timeout 10000)])]
           (if resp
-            {:body resp}
+            {:body {"text" (pretty-print resp)}}
             {:status 503 :body "Request timed out"})))
   (route/not-found "Not found"))
 
