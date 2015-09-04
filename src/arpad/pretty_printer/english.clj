@@ -20,7 +20,7 @@
 (defn- print-standings
   "Pretty print a standings message"
   [standings]
-  (let [format-str "@~a:~20,0t~4d"
+  (let [format-str "@~a:~40,0t~4d"
         ;;; ^^^ Warning: deep Common Lisp magic.
         ;;;
         ;;; You can look up the cl-format docs yourself, but the

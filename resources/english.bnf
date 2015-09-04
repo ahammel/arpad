@@ -9,7 +9,7 @@ Ignore = <('ignore'|'unfollow') w+> Player
 
 Standings = (<'standings'>|<'ratings'>|<'top' w+> num)
 
-Player = <'@'> word
+Player = word
 
 w = #"\s"
 <word> = #"[a-zA-Z0-9\*\+\!\-\_\?]+"
