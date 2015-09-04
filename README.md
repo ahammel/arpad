@@ -82,6 +82,7 @@ Assuming your user name is `ajh`
 
 ### Some day
 
+* Sub out 'me' for the user's name
 * Support for draws
 * Multiple pools
 * Traditional tournaments (round-robin, Swiss, single/double/treble elimination, group-stage+knockout)
