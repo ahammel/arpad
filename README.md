@@ -76,12 +76,13 @@ Assuming your user name is `ajh`
 
 ### Next
 
+* Support for @mentions
+* Undo stack
 * Pairing algorithms (fold, slide, adjacent, random)
 
 ### Some day
 
 * Support for draws
-* Undo stack
 * Multiple pools
 * Traditional tournaments (round-robin, Swiss, single/double/treble elimination, group-stage+knockout)
 * Continuous tournaments (pyramid, ladder)
