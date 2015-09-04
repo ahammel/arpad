@@ -13,8 +13,11 @@
   (testing "Standings message"
     (is (= (eng/pretty-print [[:williams {:rating 2321.1}]
                               [:halep    {:rating 2217.9}]])
-           (string/join "\n" ["@williams:          2321"
-                              "@halep:             2217"]))))
+           (str "```"
+                (string/join "\n"
+                             ["@williams:                              2321"
+                              "@halep:                                 2217"])
+                "```"))))
   (testing "Empty standings message"
     ; An empty map just results in a confirmation that an action was
     ; carried out.

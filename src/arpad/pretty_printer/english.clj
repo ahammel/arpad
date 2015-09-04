@@ -34,7 +34,9 @@
                                 format-str
                                 (id->str player)
                                 (int rating)))]
-    (string/join "\n" (map print-row standings))))
+    (str "```"
+         (string/join "\n" (map print-row standings))
+         "```")))
 
 (defn pretty-print
   "Convert a player report to human-readable text."

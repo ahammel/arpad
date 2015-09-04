@@ -51,7 +51,8 @@
         (>!! slack-parser-chan (:params request))
         (let [[resp _] (alts!! [report-chan (timeout 10000)])]
           (if resp
-            {:body {"text" (pretty-print resp)}}
+            {:body {"text"   (pretty-print resp)
+                    "mrkdwn" "true"}}
             {:status 503 :body "Request timed out"})))
   (route/not-found "Not found"))
 
