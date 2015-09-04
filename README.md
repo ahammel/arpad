@@ -17,7 +17,7 @@ For funzies, to learn [clojure.core.async](https://github.com/clojure/core.async
 ### Why is the logo a tomato?
 
 * 'Arpad' is a Hungrian name
-* The only thing I know about Hungray is that paprika is made there
+* The only thing I know about Hungary is that paprika is made there
 * Paprika is made form red peppers
 * There is no red pepper emoji
 
@@ -60,9 +60,9 @@ Assuming your user name is `ajh`
 
 ### Caveats
 
-* Following is opt-in. Your ratings will not be reported until you 
+* Following is opt-in. Your ratings will not be reported until you ask arpad to follow you.
+* Even if arpad is ignoring you, your ratings are still tracked behind the scenes. (This is so that the ratings of players who are being followed can be correctly adjusted after matches against players who are not being followed.)
 * There is *no support* for slack's @mentions, and you shouldn't use them. I'm working on it.
-* Even if arpad is ignoring you, your ratings are still tracked behind the scenes. (This is so that the ratings of players who are being followed can be correctly adjusted after matches against players who are not being followed.) Your rating will never be reported unless aprad is following you.
 
 ## Features
 
