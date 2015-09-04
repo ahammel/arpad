@@ -1,4 +1,4 @@
-# arpad
+# arpad :tomato:
 
 `arpad` is an IRC bot who keeps track of [Elo ratings](https://en.wikipedia.org/wiki/Elo_rating_system). Say "hi", `arpad`.
 
@@ -14,13 +14,55 @@ For funzies, to learn [clojure.core.async](https://github.com/clojure/core.async
 
 [Arapd Elo](https://en.wikipedia.org/wiki/Arpad_Elo) was the guy who invented the Elo ratings scheme.
 
+### Why is the logo a tomato?
+
+* 'Arpad' is a Hungrian name
+* The only thing I know about Hungary is that paprika is made there
+* Paprika is made form red peppers
+* There is no red pepper emoji
+
 ## Installation
 
-`arpad` isn't finished yet. You cannot usefully install him.
+### Ingredients
+* One [Slack](https://slack.com/), with Outgoing Webhooks integration
+* One tiny server
+* One supervisord (optional)
+
+### Method
+* `lein uberjar`
+* Deploy the standalone jar to the tiny server
+* Get it running. I recommend creating a [supervisord task with autorestarts](https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-supervisor-on-ubuntu-and-debian-vps).
+* Configure the outgoing webhook to point at `http://tiny.server:1128/v1/arpad`
+* Configure the webhook bot however you like. I recommend:
+  * User name: `arpad`
+  * Trigger word: `arpad, @arpad`
+  * Descriptive label: `Elo ratings bot`
+  * Icon: :tomato:
 
 ## Usage
 
-`arpad` isn't finished yet, and doesn't do anything useful. He tries really hard, though.
+Assuming your user name is `ajh`
+
+### Track your ratings
+`@arpad follow ajh`
+
+### Report a game
+`@arpad ajh beat bobjohnson`
+
+### Stop tracking your ratings
+`@arpad ignore ajh`
+
+### Get the current standings
+`@arpad standings`
+
+### Get the top ten
+`@arpad top 10`
+
+### Caveats
+
+* Following is opt-in. Your ratings will not be reported until you ask arpad to follow you.
+* Even if arpad is ignoring you, your ratings are still tracked behind the scenes. (This is so that the ratings of players who are being followed can be correctly adjusted after matches against players who are not being followed.)
+* There is *no support* for slack's @mentions, and you shouldn't use them. I'm working on it.
 
 ## Features
 
@@ -34,15 +76,17 @@ For funzies, to learn [clojure.core.async](https://github.com/clojure/core.async
 
 ### Next
 
-* Parse natual-lanugage-like commands
-* [Slack](https://slack.com/) integration
+* Support for @mentions
+* Undo stack
+* Pairing algorithms (fold, slide, adjacent, random)
 
 ### Some day
 
-* Undo stack
+* Sub out 'me' for the user's name
+* Support for draws
 * Multiple pools
-* Pairing algorithms (fold, slide, adjacent, random)
-* Tournaments (round-robin, Swiss, single/double/treble elimination, group-stage+knockout)
+* Traditional tournaments (round-robin, Swiss, single/double/treble elimination, group-stage+knockout)
+* Continuous tournaments (pyramid, ladder)
 
 ## License
 
