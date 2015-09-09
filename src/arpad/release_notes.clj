@@ -2,7 +2,7 @@
 
 (def alpha-0-0-1
   "
-Arpad release α-0.0.1
+Arpad release alpha-0.0.1
 
   New features:
     * I now understand first person pronouns!
