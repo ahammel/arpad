@@ -1,6 +1,7 @@
 (ns arpad.command-test
-  (:require [clojure.test           :refer :all]
-            [arpad.commands.english :as eng]))
+  (:require [arpad.commands.english :as eng]
+            [arpad.release-notes :refer [alpha-0-0-1]]
+            [clojure.test :refer :all]))
 
 (deftest english-commands-test
   (testing "new game"
@@ -17,6 +18,9 @@
            {:standings nil}))
     (is (= (eng/str->Command "arpad: top 10")
            {:standings 10})))
+  (testing "release notes"
+    (is (= (eng/str->Command "arpad release notes")
+           {:release-notes alpha-0-0-1})))
   (testing "nonsense"
     (is (= (eng/str->Command "arpad: I really like bananas")
            {:error "arpad: I really like bananas"}))))
