@@ -41,7 +41,7 @@
            {:body {"text" (error-msg cmd)}}
 
            (:release-notes cmd)
-           {:body {"text" (:release-notes cmd)
+           {:body {"text" (str "```" (:release-notes cmd) "```")
                    "mrkdwn" "true"}}
 
            :else
