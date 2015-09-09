@@ -1,11 +1,11 @@
 (ns arpad.slack
   (:gen-class)
-  (:require [arpad.commands.english :refer [str->Command]]
-            [arpad.pool.load :refer [load-pool]]
+  (:require [arpad.pool.load :refer [load-pool]]
             [arpad.pool.manager :refer [spawn-pool-manager]]
             [arpad.pool.schema :refer [json->Pool]]
             [arpad.persistor :refer [spawn-persistor]]
             [arpad.pretty-printer.english :refer [pretty-print]]
+            [arpad.slack.parser :refer [parse-slack-request]]
             [clojure.data.json :as json]
             [clojure.core.async :refer [<! >! >!! alts!! chan go-loop
                                         sliding-buffer timeout]]
@@ -21,12 +21,6 @@
 (defonce slack-parser-chan (chan))
 (defonce report-chan (chan))
 (def pool-file (str (System/getenv "HOME") "/arpad-pool.json"))
-
-(defn- parse-slack-request [form]
-  (if-let [msg (get form :text)]
-    (let [cmd (str->Command msg)]
-      (if-not (:error cmd)
-        cmd))))
 
 (defn error-msg
   [cmd]
@@ -70,7 +64,8 @@
     (spawn-parser (:slack-command-parser channels) channels)))
 
 (def app
-  (-> (wrap-defaults app-routes api-defaults)
+  (-> app-routes
+      (wrap-defaults api-defaults)
       (wrap-params)
       (wrap-json-response)))
 
