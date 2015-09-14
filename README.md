@@ -44,13 +44,13 @@ For funzies, to learn [clojure.core.async](https://github.com/clojure/core.async
 Assuming your user name is `ajh`
 
 ### Track your ratings
-`@arpad follow ajh`
+`@arpad follow ajh` or `@arpad follow me`
 
 ### Report a game
-`@arpad ajh beat bobjohnson`
+`@arpad ajh beat bobjohnson` or `@arpad ajh beat me` or `@arpad I beat bobjohnson`
 
 ### Stop tracking your ratings
-`@arpad ignore ajh`
+`@arpad ignore ajh` or `@arpad ignore me`
 
 ### Get the current standings
 `@arpad standings`
@@ -82,7 +82,6 @@ Assuming your user name is `ajh`
 
 ### Some day
 
-* Sub out 'me' for the user's name
 * Support for draws
 * Multiple pools
 * Traditional tournaments (round-robin, Swiss, single/double/treble elimination, group-stage+knockout)
