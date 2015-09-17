@@ -13,14 +13,14 @@
   (testing "Players message"
     (is (= (eng/pretty-print {:players {:bob {:rating 1400
                                               :total-games 12
-                                              :peak-rating 1800}
+                                              :peak-rating 1800.111111}
                                         :phil {:rating 500
                                                :total-games 1000
-                                               :peak-rating 9001}}})
+                                               :peak-rating 9001.00110100}}})
            (str "```"
-                "@bob                            "
+                "@bob                  "
                 "Rating: 1400  Games played:   12  Peak rating: 1800\n"
-                "@phil                           "
+                "@phil                 "
                 "Rating:  500  Games played: 1000  Peak rating: 9001"
                 "```"))))
   (testing "Empty players message"
@@ -33,7 +33,7 @@
                                                 :total-games 10
                                                 :peak-rating 0}}})
            (str "```"
-                "@alice                          "
+                "@alice                "
                 "Rating: 1000  Games played:   10  Peak rating: 1000"
                 "```"
                 ))))

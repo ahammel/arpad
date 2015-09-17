@@ -48,14 +48,15 @@
   {:pre [(every? #(contains? (second %) :rating) players)
          (every? #(contains? (second %) :peak-rating) players)
          (every? #(contains? (second %) :total-games) players)]}
-  (let [format-str "@~a ~30,0t Rating: ~4d  Games played: ~4d  Peak rating: ~4d"
+  (let [format-str "@~a ~20,0t Rating: ~4d  Games played: ~4d  Peak rating: ~4d"
         print-row (fn [[player stats]]
                     (cl-format nil
                                format-str
                                (id->str player)
-                               (:rating stats)
+                               (int (:rating stats))
                                (:total-games stats)
-                               (max (:rating stats) (:peak-rating stats))))]
+                               (int (max (:rating stats)
+                                         (:peak-rating stats)))))]
     (if (empty? players) "OK"
         (backticks (string/join "\n" (map print-row players))))))
 
