@@ -4,15 +4,21 @@
 
 (defn adjust-ratings
   [player-a player-b score k]
-  (map #(assoc %1 :rating %2)
-       [player-a player-b]
-       (new-ratings player-a player-b score k)))
+  (let [[a' b']
+        (new-ratings player-a player-b score k)
+
+        adjust
+        (fn [player new-rating]
+          (-> player
+              (assoc :rating new-rating)
+              (assoc :peak-rating (max (:rating player) new-rating))))]
+    [(adjust player-a a') (adjust player-b b')]))
 
 (defn new-player
   [defaults]
   (merge {:rating 0
           :total-games 0
-          :peak-rating 0
+          :peak-rating (if-let [r (:rating defaults)] r 0)
           :ignore? true} defaults))
 
 (defn init-player

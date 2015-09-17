@@ -10,20 +10,46 @@
   (testing "Ignoring message"
     (is (= (eng/pretty-print {:ignoring {:id :sally}})
            "Ignoring @sally")))
-  (testing "Standings message"
-    (is (= (eng/pretty-print [[:williams {:rating 2321.1}]
-                              [:halep    {:rating 2217.9}]])
+  (testing "Players message"
+    (is (= (eng/pretty-print {:players {:bob {:rating 1400
+                                              :total-games 12
+                                              :peak-rating 1800}
+                                        :phil {:rating 500
+                                               :total-games 1000
+                                               :peak-rating 9001}}})
            (str "```"
-                (string/join "\n"
-                             ["@williams:                              2321"
-                              "@halep:                                 2217"])
+                "@bob                            "
+                "Rating: 1400  Games played:   12  Peak rating: 1800\n"
+                "@phil                           "
+                "Rating:  500  Games played: 1000  Peak rating: 9001"
+                "```"))))
+  (testing "Empty players message"
+    (is (= (eng/pretty-print {:players []})
+           "OK")))
+  (testing "Edge-case players message"
+    ;; When the peak-rating is less than the current rating, sub in
+    ;; the current rating
+    (is (= (eng/pretty-print {:players {:alice {:rating 1000
+                                                :total-games 10
+                                                :peak-rating 0}}})
+           (str "```"
+                "@alice                          "
+                "Rating: 1000  Games played:   10  Peak rating: 1000"
+                "```"
+                ))))
+  (testing "Standings message"
+    (is (= (eng/pretty-print {:standings [[:williams {:rating 2321.1}]
+                                          [:halep    {:rating 2217.9}]]})
+           (str "```"
+                " 1. @williams:                          2321\n"
+                " 2. @halep:                             2217"
                 "```"))))
   (testing "Empty standings message"
     ; An empty map just results in a confirmation that an action was
     ; carried out.
-    (is (= (eng/pretty-print {})
+    (is (= (eng/pretty-print {:standings []})
            "OK")))
   (testing "Nonsense message"
     ; Any other message results in an error message
     (is (= (eng/pretty-print {:foo :bar})
-           "I didn't understand the message '{:foo :bar}'"))))
+           "ERR: Cannot pretty-print the message '{:foo :bar}'"))))

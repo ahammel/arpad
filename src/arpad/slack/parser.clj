@@ -8,10 +8,10 @@
     :my :My :mY :MY})
 
 (defn- replace-me
-  [player name]
+  [player user-name]
   {:pre [(contains? player :id)]}
   (if (i-me-my (:id player))
-    (assoc player :id (keyword name))
+    (assoc player :id (keyword user-name))
     player))
 
 (defn- replace-user
@@ -29,6 +29,9 @@
 
     [{:ignore player}]
     {:ignore (replace-me player user-name)}
+
+    [{:rating player}]
+    {:rating (replace-me player user-name)}
 
     :else
     command))

@@ -31,7 +31,7 @@
   (testing "new players default to ignored"
     (go (>! @in-chan {:new-game [{:id :bob} {:id :mary} 0.5]}))
     (let [report (get-result-out)]
-      (is (= (count report) 0))))
+      (is (= (count (:players report)) 0))))
   (testing "follow Bob"
     (go (>! @in-chan {:follow {:id :bob}}))
     (let [result (get-result-out)]
@@ -49,7 +49,7 @@
     (is (= (get-result-out)
            {:ignoring {:id :bob}}))
     (go (>! @in-chan {:new-game [{:id :bob} {:id :mary} 0.5]}))
-    (is (= (count (get-result-out))
+    (is (= (count (:players (get-result-out)))
            0))))
 
 (deftest pool-manager-tests
@@ -61,23 +61,37 @@
   (testing "new players draw"
     (go (>! @in-chan {:new-game [{:id :karpov} {:id :kasparov} 0.5]}))
     (let [result (get-result-out)]
-      (is (close? 1000 (get-in result [:karpov   :rating])))
-      (is (close? 1000 (get-in result [:kasparov :rating])))
-      (is (= 1 (get-in result [:karpov   :total-games])))
-      (is (= 1 (get-in result [:kasparov :total-games])))))
+      (is (close? 1000 (get-in result [:players :karpov :rating])))
+      (is (close? 1000 (get-in result [:players :kasparov :rating])))
+      (is (= 1 (get-in result [:players :karpov :total-games])))
+      (is (= 1 (get-in result [:players :kasparov :total-games])))))
+  (testing "player report after one game"
+    (go (>! @in-chan {:rating {:id :karpov}}))
+    (let [result (get-result-out)]
+      (is (close? 1000 (get-in result [:players :karpov :rating])))
+      (is (close? 1000 (get-in result [:players :karpov :peak-rating])))
+      (is (= 1 (get-in result [:players :karpov :total-games])))))
   (testing "kasparov wins"
     (go (>! @in-chan {:new-game [{:id :karpov} {:id :kasparov} 0]}))
     (let [result (get-result-out)]
-      (is (> (get-in result [:kasparov :rating])
-             (get-in result [:karpov   :rating])))))
+      (is (> (get-in result [:players :kasparov :rating])
+             (get-in result [:players :karpov :rating])))))
+  (testing "player report after two game"
+    (go (>! @in-chan {:rating {:id :karpov}}))
+    (let [result (get-result-out)]
+      (is (> 1000 (get-in result [:players :karpov :rating])))
+      (is (close? 1000 (get-in result [:players :karpov :peak-rating])))
+      (is (= 2 (get-in result [:players :karpov :total-games]))))
+    (go (>! @in-chan {:rating {:id :kasparov}}))
+    (is (< 1000 (get-in (get-result-out) [:players :kasparov :peak-rating]))))
   (testing "standings"
     (testing "no limit"
       (go (>! @in-chan {:standings nil}))
       (let [result (get-result-out)]
-        (is (= (into [] (map first result))
+        (is (= (into [] (map first (:standings result)))
                [:kasparov :karpov]))))
     (testing "limit of one"
       (go (>! @in-chan {:standings 1}))
       (let [result (get-result-out)]
-        (is (= (into [] (map first result))
+        (is (= (into [] (map first (:standings result)))
                [:kasparov]))))))

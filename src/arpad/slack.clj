@@ -22,9 +22,8 @@
 (defonce report-chan (chan))
 (def pool-file (str (System/getenv "HOME") "/arpad-pool.json"))
 
-(defn error-msg
-  [cmd]
-  (str "I'm sorry, I didn't understand the message: " cmd))
+(def error-msg
+  "I'm sorry, I didn't understand that message.")
 
 (defroutes app-routes
   (POST "/v1/arpad" request
@@ -38,7 +37,7 @@
                         " @ajh.")}}
 
            (nil? cmd)
-           {:body {"text" (error-msg cmd)}}
+           {:body {"text" error-msg}}
 
            (:release-notes cmd)
            {:body {"text" (str "```" (:release-notes cmd) "```")

@@ -30,7 +30,8 @@
   [pool msg]
   (match [msg]
     [{:new-game [player-a player-b _]}]
-    (lookup-player pool player-a player-b)
+    {:players
+     (lookup-player pool player-a player-b)}
 
     [{:follow player}]
     {:following player}
@@ -38,8 +39,13 @@
     [{:ignore player}]
     {:ignoring player}
 
+    [{:rating player}]
+    {:players (lookup-player pool player)}
+
     [{:standings n}]
-    (if n (standings pool n) (standings pool))
+    (if n
+      {:standings (standings pool n)}
+      {:standings (standings pool)})
 
     :else
     {:error msg}))

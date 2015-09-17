@@ -1,5 +1,5 @@
 (ns arpad.commands.english
-  (:require [arpad.release-notes :refer [alpha-0-0-1]]
+  (:require [arpad.release-notes :refer :all]
             [clojure.core.match :refer [match]]
             [clojure.java.io :as io]
             [instaparse.core :as insta]))
@@ -25,8 +25,11 @@
     [[:Command [:Standings n]]]
     {:standings (Integer/parseInt n)}
 
+    [[:Command [:Rating [:Player p]]]]
+    {:rating {:id (keyword p)}}
+
     [[:Command [:ReleaseNotes]]]
-    {:release-notes alpha-0-0-1}
+    {:release-notes alpha-0-0-2}
 
     :else
     {:error string}))

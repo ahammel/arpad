@@ -9,6 +9,11 @@
   [id]
   (string/replace-first (str id) ":" ""))
 
+(defn- backticks
+  "Wrap a string in ```triple backticks```"
+  [string]
+  (str "```" string "```"))
+
 (defn- standings?
   "Returns nil if the argument does not match the standings message
   format"
@@ -20,23 +25,39 @@
 (defn- print-standings
   "Pretty print a standings message"
   [standings]
-  (let [format-str "@~a:~40,0t~4d"
+  (let [format-str "~2d. @~a:~40,0t~4d"
         ;;; ^^^ Warning: deep Common Lisp magic.
         ;;;
         ;;; You can look up the cl-format docs yourself, but the
-        ;;; interesting part is '~20,0t', which aligns the ratings to
-        ;;; the 20th column,which I figure is a reasonable deafult for
+        ;;; interesting part is '~40,0t', which aligns the ratings to
+        ;;; the 40th column,which I figure is a reasonable deafult for
         ;;; now. There's probably a way to dynamically calculate this
-        ;;; based on the longest name in the map, but this is fine for
-        ;;; now.
-        print-row  (fn [[player {rating :rating}]]
+        ;;; based on the longest name in the map.
+        print-row  (fn [[player {rating :rating}] ordinality]
                      (cl-format nil
                                 format-str
+                                (inc ordinality)
                                 (id->str player)
                                 (int rating)))]
-    (str "```"
-         (string/join "\n" (map print-row standings))
-         "```")))
+    (if (empty? standings) "OK"
+        (backticks (string/join "\n" (map print-row standings (range)))))))
+
+(defn- print-players
+  "Print a ratings message for a player."
+  [players]
+  {:pre [(every? #(contains? (second %) :rating) players)
+         (every? #(contains? (second %) :peak-rating) players)
+         (every? #(contains? (second %) :total-games) players)]}
+  (let [format-str "@~a ~30,0t Rating: ~4d  Games played: ~4d  Peak rating: ~4d"
+        print-row (fn [[player stats]]
+                    (cl-format nil
+                               format-str
+                               (id->str player)
+                               (:rating stats)
+                               (:total-games stats)
+                               (max (:rating stats) (:peak-rating stats))))]
+    (if (empty? players) "OK"
+        (backticks (string/join "\n" (map print-row players))))))
 
 (defn pretty-print
   "Convert a player report to human-readable text."
@@ -48,15 +69,14 @@
     [{:ignoring {:id player}}]
     (str "Ignoring @" (id->str player))
 
+    [{:standings standings}]
+    (print-standings standings)
+
+    [{:players players}]
+    (print-players players)
+
     :else
-    (cond
-     (empty? report) "OK"
-
-     (standings? report)
-     (print-standings report)
-
-     :else
-     (str "I didn't understand the message '" (str report) "'"))))
+    (str "ERR: Cannot pretty-print the message '" (str report) "'")))
 
 (defn spawn-pretty-printer
   "Creates a process which takes player-reports from the in-chan and

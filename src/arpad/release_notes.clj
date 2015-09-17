@@ -1,5 +1,15 @@
 (ns arpad.release-notes)
 
+(def alpha-0-0-2
+  "
+Arpad release alpha-0.0.2
+
+  New features:
+    * General improvements to player statistics reporting
+    * 'arpad: my rating' command
+    * I now report total number of games played and peak rating
+")
+
 (def alpha-0-0-1
   "
 Arpad release alpha-0.0.1

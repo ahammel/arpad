@@ -1,6 +1,6 @@
 (ns arpad.slack-parser-test
   (:require [arpad.slack.parser :refer [parse-slack-request]]
-            [arpad.release-notes :refer [alpha-0-0-1]]
+            [arpad.release-notes :refer :all]
             [clojure.test :refer :all]))
 
 (deftest parse-slack-request-test
@@ -20,7 +20,7 @@
            {:standings 10})))
   (testing "release notes"
     (is (= (parse-slack-request {:text "arpad release notes"})
-           {:release-notes alpha-0-0-1})))
+           {:release-notes alpha-0-0-2})))
   (testing "nonsense"
     (is (= (parse-slack-request {:text "arpad: I really like bananas"})
            nil))))

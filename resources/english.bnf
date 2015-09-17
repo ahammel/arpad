@@ -1,4 +1,4 @@
-Command = <Leader> (NewGame | Follow | Ignore | Standings | ReleaseNotes) <any*>
+Command = <Leader> (NewGame | Follow | Ignore | Standings | Rating | ReleaseNotes) <any*>
 Leader = w* '@'? 'arpad' w* ':'? w*
 
 NewGame = Player <w+ Beat w+> Player
@@ -8,6 +8,8 @@ Follow = <('follow'|'unignore') w+> Player
 Ignore = <('ignore'|'unfollow') w+> Player
 
 Standings = (<'standings'>|<'ratings'>|<'top' w+> num)
+
+Rating = Player <w+ ('rating'|'ratings')>
 
 Player = word
 
