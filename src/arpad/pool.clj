@@ -2,6 +2,8 @@
   (:require [arpad.elo :refer [new-ratings]]
             [arpad.k :refer [k-functions]]))
 
+(defn non-nil-max [a b] (if a (max a b) b))
+
 (defn adjust-ratings
   [player-a player-b score k]
   (let [[a' b']
@@ -11,7 +13,9 @@
         (fn [player new-rating]
           (-> player
               (assoc :rating new-rating)
-              (assoc :peak-rating (max (:rating player) new-rating))))]
+              (assoc :peak-rating (non-nil-max
+                                   (:peak-rating player)
+                                   new-rating))))]
     [(adjust player-a a') (adjust player-b b')]))
 
 (defn new-player
