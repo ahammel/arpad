@@ -23,7 +23,10 @@
            {:standings 10})))
   (testing "release notes"
     (is (= (parse-slack-request {:text "arpad release notes"})
-           {:release-notes alpha-0-0-2})))
+           {:release-notes latest})))
+  (testing "undo"
+    (is (= (parse-slack-request {:text "arpad undo"})
+           {:undo 1})))
   (testing "nonsense"
     (is (= (parse-slack-request {:text "arpad: I really like bananas"})
            nil))))

@@ -1,5 +1,5 @@
 (ns arpad.commands.english
-  (:require [arpad.release-notes :refer :all]
+  (:require [arpad.release-notes :refer [latest]]
             [clojure.core.match :refer [match]]
             [clojure.java.io :as io]
             [instaparse.core :as insta]))
@@ -28,8 +28,11 @@
     [[:Command [:Rating [:Player p]]]]
     {:rating {:id (keyword p)}}
 
+    [[:Command [:Undo]]]
+    {:undo 1}
+
     [[:Command [:ReleaseNotes]]]
-    {:release-notes alpha-0-0-2}
+    {:release-notes latest}
 
     :else
     {:error string}))

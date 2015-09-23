@@ -64,13 +64,27 @@
   {:pre [(contains? out-chans :player-report)
          (contains? out-chans :new-state)]}
   (go-loop [msg (<! in-chan)
-            pool init-pool]
+            pool init-pool
+            last-state nil]
     (cond
-     msg (let [pool' (mutate-pool pool msg)
-               report (gen-report pool' msg)]
-           (>! (:new-state out-chans) pool')
-           (>! (:player-report out-chans) report)
-           (recur (<! in-chan) pool'))
-     close? (doseq [c (vals out-chans)]
-              (close! c))
+     (:undo msg)
+     (if last-state
+       (do (>! (:new-state out-chans) last-state)
+           (>! (:player-report out-chans) {:undo 1})
+           (recur (<! in-chan) last-state nil))
+       (do (>! (:player-report out-chans) {:error :cannot-undo})
+           (recur (<! in-chan) pool nil)))
+
+     msg
+     (let [pool' (mutate-pool pool msg)
+           report (gen-report pool' msg)
+           undo-state (if (= pool pool') last-state pool)]
+       (>! (:new-state out-chans) pool')
+       (>! (:player-report out-chans) report)
+       (recur (<! in-chan) pool' undo-state))
+
+     close?
+     (doseq [c (vals out-chans)]
+       (close! c))
+
      :else nil)))

@@ -49,6 +49,12 @@
     ; carried out.
     (is (= (eng/pretty-print {:standings []})
            "OK")))
+  (testing "Successful undo message"
+    (is (= (eng/pretty-print {:undo 1})
+           "OK, I've undone the last command")))
+  (testing "Unsuccessful undo message"
+    (is (= (eng/pretty-print {:error :cannot-undo})
+           "Sorry, I can't undo any more!")))
   (testing "Nonsense message"
     ; Any other message results in an error message
     (is (= (eng/pretty-print {:foo :bar})

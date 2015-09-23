@@ -95,3 +95,26 @@
       (let [result (get-result-out)]
         (is (= (into [] (map first (:standings result)))
                [:kasparov]))))))
+
+(deftest undo-tests
+  (testing "invalid undo"
+    (go (>! @in-chan {:undo 1}))
+    (is (= (get-result-out) {:error :cannot-undo})))
+  (testing "undo follow"
+    (go (>! @in-chan {:follow {:id :kasparov}}))
+    (is (not (nil? (get-result-out))))
+    (go (>! @in-chan {:undo 1}))
+    (is (= (get-result-out) {:undo 1}))
+    (go (>! @in-chan {:standings nil}))
+    (is (= 0 (count (:players (get-result-out))))))
+  (testing "undo new game"
+    (go (>! @in-chan {:follow {:id :kasparov}}))
+    (get-result-out)
+    (go (>! @in-chan {:new-game [{:id :karpov} {:id :kasparov} 0]}))
+    (get-result-out)
+    (go (>! @in-chan {:undo 1}))
+    (is (= (get-result-out) {:undo 1}))
+    (go (>! @in-chan {:rating {:id :kasparov}}))
+    (let [result (get-result-out)]
+      (is (close? 1000 (get-in result [:players :kasparov :rating])))
+      (is (= 0 (get-in result [:players :kasparov :total-games]))))))

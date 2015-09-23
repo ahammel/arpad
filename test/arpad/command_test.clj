@@ -1,6 +1,6 @@
 (ns arpad.command-test
   (:require [arpad.commands.english :as eng]
-            [arpad.release-notes :refer :all]
+            [arpad.release-notes :refer [latest]]
             [clojure.test :refer :all]))
 
 (deftest english-commands-test
@@ -21,9 +21,12 @@
   (testing "rating"
     (is (= (eng/str->Command "arpad: alice rating")
            {:rating {:id :alice}})))
+  (testing "undo"
+    (is (= (eng/str->Command "arpad: undo")
+           {:undo 1})))
   (testing "release notes"
     (is (= (eng/str->Command "arpad release notes")
-           {:release-notes alpha-0-0-2})))
+           {:release-notes latest})))
   (testing "nonsense"
     (is (= (eng/str->Command "arpad: I really like bananas")
            {:error "arpad: I really like bananas"}))))

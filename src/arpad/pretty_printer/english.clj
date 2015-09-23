@@ -76,11 +76,17 @@
     [{:players players}]
     (print-players players)
 
+    [{:undo _}]
+    "OK, I've undone the last command"
+
+    [{:error :cannot-undo}]
+    "Sorry, I can't undo any more!"
+
     :else
     (str "ERR: Cannot pretty-print the message '" (str report) "'")))
 
 (defn spawn-pretty-printer
   "Creates a process which takes player-reports from the in-chan and
-  supplies human-readabletext strings to the out-chan"
+  supplies human-readable text strings to the out-chan"
   [in-chan out-chan]
   (async/pipeline 1 out-chan (map pretty-print) in-chan))
