@@ -1,6 +1,7 @@
 (ns arpad.slack.parser
   (:require [arpad.commands.english :refer [str->Command]]
-            [clojure.core.match :refer [match]]))
+            [clojure.core.match :refer [match]]
+            [clojure.string :refer [lower-case]]))
 
 (def i-me-my
   #{:i :I
@@ -50,6 +51,7 @@
         user (get form :user_name)
         cmd (str->Command msg)]
     (-> msg
+        (lower-case)
         (str->Command)
         (replace-user user)
         (not-error?))))

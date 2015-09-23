@@ -1,11 +1,14 @@
 (ns arpad.slack-parser-test
   (:require [arpad.slack.parser :refer [parse-slack-request]]
-            [arpad.release-notes :refer :all]
+            [arpad.release-notes :refer [latest]]
             [clojure.test :refer :all]))
 
 (deftest parse-slack-request-test
   (testing "new game"
     (is (= (parse-slack-request {:text "arpad: masoud beat ajh"})
+           {:new-game [{:id :masoud} {:id :ajh} 1]})))
+  (testing "new game in capitals"
+    (is (= (parse-slack-request {:text "ARPAD: MASOUD BEAT AJH"})
            {:new-game [{:id :masoud} {:id :ajh} 1]})))
   (testing "follow"
     (is (= (parse-slack-request {:text "arpad: follow lola"})
