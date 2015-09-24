@@ -1,5 +1,6 @@
 (ns arpad.commands.english
   (:require [arpad.release-notes :refer [latest]]
+            [arpad.help :refer [help]]
             [clojure.core.match :refer [match]]
             [clojure.java.io :as io]
             [instaparse.core :as insta]))
@@ -11,28 +12,33 @@
   [string]
   (match [(insta/parse parser string)]
     [[:Command [:NewGame [:Player a] [:Player b]]]]
-    {:new-game [{:id (keyword a)} {:id (keyword b)} 1]}
+    {:cmd :new-game
+     :score [{:id (keyword a)} {:id (keyword b)} 1]}
 
     [[:Command [:Follow [:Player p]]]]
-    {:follow {:id (keyword p)}}
+    {:cmd :follow
+     :player {:id (keyword p)}}
 
     [[:Command [:Ignore [:Player p]]]]
-    {:ignore {:id (keyword p)}}
+    {:cmd :ignore
+     :player {:id (keyword p)}}
 
     [[:Command [:Standings]]]
-    {:standings nil}
+    {:cmd :standings}
 
     [[:Command [:Standings n]]]
-    {:standings (Integer/parseInt n)}
+    {:cmd :standings
+     :number (Integer/parseInt n)}
 
     [[:Command [:Rating [:Player p]]]]
-    {:rating {:id (keyword p)}}
+    {:cmd :rating
+     :player {:id (keyword p)}}
 
     [[:Command [:Undo]]]
-    {:undo 1}
+    {:cmd :undo}
 
     [[:Command [:Help]]]
-    {:help 1}
+    {:help help}
 
     [[:Command [:ReleaseNotes]]]
     {:release-notes latest}

@@ -1,35 +1,40 @@
 (ns arpad.slack-parser-test
-  (:require [arpad.slack.parser :refer [parse-slack-request]]
+  (:require [arpad.help :refer [help]]
+            [arpad.slack.parser :refer [parse-slack-request]]
             [arpad.release-notes :refer [latest]]
             [clojure.test :refer :all]))
 
 (deftest parse-slack-request-test
   (testing "new game"
     (is (= (parse-slack-request {:text "arpad: masoud beat ajh"})
-           {:new-game [{:id :masoud} {:id :ajh} 1]})))
+           {:cmd :new-game
+            :score [{:id :masoud} {:id :ajh} 1]})))
   (testing "new game in capitals"
     (is (= (parse-slack-request {:text "ARPAD: MASOUD BEAT AJH"})
-           {:new-game [{:id :masoud} {:id :ajh} 1]})))
+           {:cmd :new-game
+            :score [{:id :masoud} {:id :ajh} 1]})))
   (testing "follow"
     (is (= (parse-slack-request {:text "arpad: follow lola"})
-           {:follow {:id :lola}})))
+           {:cmd :follow
+            :player {:id :lola}})))
   (testing "unfollow"
     (is (= (parse-slack-request {:text "arpad ignore bob"})
-           {:ignore {:id :bob}})))
+           {:cmd :ignore
+            :player {:id :bob}})))
   (testing "standings"
     (is (= (parse-slack-request {:text "arpad: standings"})
-           {:standings nil}))
+           {:cmd :standings}))
     (is (= (parse-slack-request {:text "arpad: top 10"})
-           {:standings 10})))
+           {:cmd :standings :number 10})))
   (testing "help"
     (is (= (parse-slack-request {:text "arpad help"})
-           {:help 1})))
+           {:help help})))
   (testing "release notes"
     (is (= (parse-slack-request {:text "arpad release notes"})
            {:release-notes latest})))
   (testing "undo"
     (is (= (parse-slack-request {:text "arpad undo"})
-           {:undo 1})))
+           {:cmd :undo})))
   (testing "nonsense"
     (is (= (parse-slack-request {:text "arpad: I really like bananas"})
            nil))))
@@ -38,12 +43,13 @@
   (testing "new game"
     (is (= (parse-slack-request {:text "arpad: I beat ajh"
                                  :user_name "masoud"})
-           {:new-game [{:id :masoud} {:id :ajh} 1]})))
+           {:cmd :new-game
+            :score [{:id :masoud} {:id :ajh} 1]})))
   (testing "follow"
     (is (= (parse-slack-request {:text "arpad: follow me"
                                  :user_name "lola"})
-           {:follow {:id :lola}})))
+           {:cmd :follow :player {:id :lola}})))
   (testing "unfollow"
     (is (= (parse-slack-request {:text "arpad ignore my ratings"
                                  :user_name "bob"})
-           {:ignore {:id :bob}}))))
+           {:cmd :ignore :player {:id :bob}}))))

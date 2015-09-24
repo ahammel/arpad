@@ -1,6 +1,5 @@
 (ns arpad.slack.parser
   (:require [arpad.commands.english :refer [str->Command]]
-            [clojure.core.match :refer [match]]
             [clojure.string :refer [lower-case]]))
 
 (def i-me-my
@@ -19,22 +18,26 @@
   "If the command makes reference to a user named 'I', 'me', or 'my',
   replace those strings with the user-name"
   [command user-name]
-  (match [command]
-    [{:new-game [player-a player-b score]}]
-    {:new-game [(replace-me player-a user-name)
-                (replace-me player-b user-name)
-                score]}
+  (case (:cmd command)
+    :new-game
+    (let [[player-a player-b score] (:score command)]
+      {:cmd :new-game
+       :score [(replace-me player-a user-name)
+               (replace-me player-b user-name)
+               score]})
 
-    [{:follow player}]
-    {:follow (replace-me player user-name)}
+    :follow
+    {:cmd :follow
+     :player (replace-me (:player command) user-name)}
 
-    [{:ignore player}]
-    {:ignore (replace-me player user-name)}
+    :ignore
+    {:cmd :ignore
+     :player (replace-me (:player command) user-name)}
 
-    [{:rating player}]
-    {:rating (replace-me player user-name)}
+    :rating
+    {:cmd :rating
+     :player (replace-me (:player command) user-name)}
 
-    :else
     command))
 
 (defn- not-error?

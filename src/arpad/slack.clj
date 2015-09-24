@@ -32,15 +32,19 @@
           (cond
            (or (nil? (:text params)) (nil? (:user_name params)))
            {:body {"text"
-                   (str "Oh dear, it seems somebody has made some incorrect"
-                        "assumptions about the Slack API. Go yell at"
-                        " @ajh.")}}
+                   (str "Oh dear, it seems somebody has made some incorrect "
+                        "assumptions about the Slack API. Go yell at "
+                        "@ajh.")}}
 
            (nil? cmd)
            {:body {"text" error-msg}}
 
            (:release-notes cmd)
            {:body {"text" (str "```" (:release-notes cmd) "```")
+                   "mrkdwn" "true"}}
+
+           (:help cmd)
+           {:body {"text" (str (:help cmd))
                    "mrkdwn" "true"}}
 
            :else

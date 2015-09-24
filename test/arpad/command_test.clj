@@ -1,32 +1,34 @@
 (ns arpad.command-test
   (:require [arpad.commands.english :as eng]
+            [arpad.help :refer [help]]
             [arpad.release-notes :refer [latest]]
             [clojure.test :refer :all]))
 
 (deftest english-commands-test
   (testing "new game"
     (is (= (eng/str->Command "arpad: masoud beat ajh")
-           {:new-game [{:id :masoud} {:id :ajh} 1]})))
+           {:cmd :new-game
+            :score [{:id :masoud} {:id :ajh} 1]})))
   (testing "follow"
     (is (= (eng/str->Command "arpad: follow lola")
-           {:follow {:id :lola}})))
+           {:cmd :follow :player {:id :lola}})))
   (testing "unfollow"
     (is (= (eng/str->Command "arpad ignore bob")
-           {:ignore {:id :bob}})))
+           {:cmd :ignore :player {:id :bob}})))
   (testing "standings"
     (is (= (eng/str->Command "arpad: standings")
-           {:standings nil}))
+           {:cmd :standings}))
     (is (= (eng/str->Command "arpad: top 10")
-           {:standings 10})))
+           {:cmd :standings :number 10})))
   (testing "rating"
     (is (= (eng/str->Command "arpad: alice rating")
-           {:rating {:id :alice}})))
+           {:cmd :rating :player {:id :alice}})))
   (testing "undo"
     (is (= (eng/str->Command "arpad: undo")
-           {:undo 1})))
+           {:cmd :undo})))
   (testing "help"
     (is (= (eng/str->Command "arpad help")
-           {:help 1})))
+           {:help help})))
   (testing "release notes"
     (is (= (eng/str->Command "arpad release notes")
            {:release-notes latest})))

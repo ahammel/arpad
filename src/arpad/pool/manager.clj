@@ -1,6 +1,5 @@
 (ns arpad.pool.manager
   (:require [clojure.core.async :as async :refer [<! >! close! go-loop]]
-            [clojure.core.match           :refer [match]]
             [arpad.pool                   :refer [lookup-player
                                                   follow-player
                                                   ignore-player
@@ -10,44 +9,44 @@
 (defn mutate-pool
   "Generate a new pool, depending on the contents of the message"
   [pool msg]
-  (match [msg]
-    [{:new-game [player-a player-b score]}]
-    (-> pool
-        (update-pool player-a player-b score)
-        (update-in [:players (:id player-a) :total-games] inc)
-        (update-in [:players (:id player-b) :total-games] inc))
+  (case (:cmd msg)
+    :new-game
+    (let [[player-a player-b score] (:score msg)]
+      (-> pool
+          (update-pool player-a player-b score)
+          (update-in [:players (:id player-a) :total-games] inc)
+          (update-in [:players (:id player-b) :total-games] inc)))
 
-    [{:follow player}]
-    (follow-player pool player)
+    :follow
+    (follow-player pool (:player msg))
+    
+    :ignore
+    (ignore-player pool (:player msg))
 
-    [{:ignore player}]
-    (ignore-player pool player)
-
-    :else pool))
+    pool))
 
 (defn gen-report
   "Generate a report based on the contents of the message"
   [pool msg]
-  (match [msg]
-    [{:new-game [player-a player-b _]}]
-    {:players
-     (lookup-player pool player-a player-b)}
+  (case (:cmd msg)
+    :new-game
+    (let [[player-a player-b _] (:score msg)]
+      {:players (lookup-player pool player-a player-b)})
 
-    [{:follow player}]
-    {:following player}
+    :follow
+    {:following (:player msg)}
 
-    [{:ignore player}]
-    {:ignoring player}
+    :ignore
+    {:ignoring (:player msg)}
 
-    [{:rating player}]
-    {:players (lookup-player pool player)}
+    :rating
+    {:players (lookup-player pool (:player msg))}
 
-    [{:standings n}]
-    (if n
+    :standings
+    (if-let [n (:number msg)]
       {:standings (standings pool n)}
       {:standings (standings pool)})
 
-    :else
     {:error msg}))
 
 (defn spawn-pool-manager
@@ -67,7 +66,7 @@
             pool init-pool
             last-state nil]
     (cond
-     (:undo msg)
+     (= (:cmd msg) :undo)
      (if last-state
        (do (>! (:new-state out-chans) last-state)
            (>! (:player-report out-chans) {:undo 1})
