@@ -21,6 +21,9 @@
            {:standings nil}))
     (is (= (parse-slack-request {:text "arpad: top 10"})
            {:standings 10})))
+  (testing "help"
+    (is (= (parse-slack-request {:text "arpad help"})
+           {:help 1})))
   (testing "release notes"
     (is (= (parse-slack-request {:text "arpad release notes"})
            {:release-notes latest})))

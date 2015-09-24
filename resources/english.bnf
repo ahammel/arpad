@@ -4,6 +4,7 @@ Command = <Leader> ( NewGame
                    | Standings
                    | Rating
                    | Undo
+                   | Help
                    | ReleaseNotes
                    ) <any*>
 Leader = w* '@'? 'arpad' w* ':'? w*
@@ -19,6 +20,8 @@ Standings = (<'standings'>|<'ratings'>|<'top' w+> num)
 Rating = Player <w+ ('rating'|'ratings')>
 
 Undo = <w*'undo'w*>
+
+Help = <w*'help' '!'? w*>
 
 Player = word
 

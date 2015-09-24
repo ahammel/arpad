@@ -2,6 +2,15 @@
 
 (def latest
   "
+Arpad release alpha-0.0.4
+
+  New features:
+    * +3 helpfulness!
+      * Use `arpad help` to see the help text
+")
+
+(def alpha-0-0-3
+  "
 Arpad release alpha-0.0.3
 
   New features:
@@ -13,7 +22,7 @@ Arpad release alpha-0.0.3
         mistakes in a row, you're out of luck.
     * Case-insensitive command parsing
       * Now I can not only understand commands like 'arpad I beat bob',
-        but also 'Arpad i beat Bob', ARPAD I BEAT BOB!!!!1!!!!LOL!',
+        but also 'Arpad i beat Bob', ARPAD I BEAT BOB WOOHOO!!!!1!!!!LOL!',
         and 'ArPaD aLiCe bEaT BoB'
 
   Bug fixes:

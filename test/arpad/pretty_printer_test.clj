@@ -1,7 +1,8 @@
 (ns arpad.pretty-printer-test
-  (:require [clojure.test :refer :all]
+  (:require [arpad.pretty-printer.english :as eng]
+            [arpad.help :refer [help]]
             [clojure.string :as string]
-            [arpad.pretty-printer.english :as eng]))
+            [clojure.test :refer :all]))
 
 (deftest english-pprint-test
   (testing "Follow message"
@@ -55,6 +56,8 @@
   (testing "Unsuccessful undo message"
     (is (= (eng/pretty-print {:error :cannot-undo})
            "Sorry, I can't undo any more!")))
+  (testing "help message"
+    (is (= (eng/pretty-print {:help 1}) help)))
   (testing "Nonsense message"
     ; Any other message results in an error message
     (is (= (eng/pretty-print {:foo :bar})
