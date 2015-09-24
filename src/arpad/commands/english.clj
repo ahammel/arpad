@@ -31,6 +31,9 @@
     [[:Command [:Undo]]]
     {:undo 1}
 
+    [[:Command [:Help]]]
+    {:help 1}
+
     [[:Command [:ReleaseNotes]]]
     {:release-notes latest}
 

@@ -1,5 +1,6 @@
 (ns arpad.pretty-printer.english
-  (:require [clojure.core.async :as async]
+  (:require [arpad.help :refer [help]]
+            [clojure.core.async :as async]
             [clojure.core.match :refer [match]]
             [clojure.pprint :refer [cl-format]]
             [clojure.string :as string]))
@@ -81,6 +82,9 @@
 
     [{:error :cannot-undo}]
     "Sorry, I can't undo any more!"
+
+    [{:help 1}]
+    help
 
     :else
     (str "ERR: Cannot pretty-print the message '" (str report) "'")))

@@ -24,6 +24,9 @@
   (testing "undo"
     (is (= (eng/str->Command "arpad: undo")
            {:undo 1})))
+  (testing "help"
+    (is (= (eng/str->Command "arpad help")
+           {:help 1})))
   (testing "release notes"
     (is (= (eng/str->Command "arpad release notes")
            {:release-notes latest})))
