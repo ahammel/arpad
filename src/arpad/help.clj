@@ -12,8 +12,7 @@ To have me report your ratings in the standings and after games:
 In most commands, you can replace your own user name with the words 'I', 'me', or 'my', and I'll figure out who you're talking about.
 
 I can stop reporting your ratings at any time:
-> `aprad ignore me` or `arpad unfollow alice
-`
+> `aprad ignore me` or `arpad unfollow alice`
 
 I'll still keep track of your ratings behind the scenes, in case you decide you'd like to be followed again in the future, and in order to keep track of your opponents ratings.
 
