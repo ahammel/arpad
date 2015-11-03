@@ -18,7 +18,7 @@ For funzies, to learn [clojure.core.async](https://github.com/clojure/core.async
 
 * 'Arpad' is a Hungrian name
 * The only thing I know about Hungary is that paprika is made there
-* Paprika is made form red peppers
+* Paprika is made from red peppers
 * There is no red pepper emoji
 
 ## Installation
