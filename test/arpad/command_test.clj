@@ -18,6 +18,8 @@
   (testing "standings"
     (is (= (eng/str->Command "arpad: standings")
            {:cmd :standings}))
+    (is (= (eng/str->Command "arpad: standing")
+           {:cmd :standings}))
     (is (= (eng/str->Command "arpad: top 10")
            {:cmd :standings :number 10})))
   (testing "rating"

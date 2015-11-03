@@ -24,6 +24,8 @@
   (testing "standings"
     (is (= (parse-slack-request {:text "arpad: standings"})
            {:cmd :standings}))
+    (is (= (parse-slack-request {:text "arpad: standing"})
+           {:cmd :standings}))
     (is (= (parse-slack-request {:text "arpad: top 10"})
            {:cmd :standings :number 10})))
   (testing "help"
