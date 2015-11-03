@@ -15,7 +15,7 @@ Beat = 'beat' | 'defeated' | 'win' | 'wins'
 Follow = <('follow'|'unignore') w+> Player
 Ignore = <('ignore'|'unfollow') w+> Player
 
-Standings = (<'standings'>|<'ratings'>|<'top' w+> num)
+Standings = (<'standing'>|<'standings'>|<'ratings'>|<'top' w+> num)
 
 Rating = Player <w+ ('rating'|'ratings')>
 
