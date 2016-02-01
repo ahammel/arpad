@@ -2,6 +2,12 @@
   (:require [arpad.elo :refer [new-ratings]]
             [arpad.k :refer [k-functions]]))
 
+
+(defn settings
+  [pool]
+  {:k (:k pool)
+   :default-rating (:default-rating pool)})
+
 (defn non-nil-max [a b] (if a (max a b) b))
 
 (defn adjust-ratings

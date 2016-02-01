@@ -4,7 +4,14 @@
                                                   follow-player
                                                   ignore-player
                                                   update-pool
+                                                  settings
                                                   standings]]))
+
+(defn- get-sub-pool
+  [pool sub-pool-name]
+  (if-let [sub-pool (get pool sub-pool-name)]
+    sub-pool
+    (merge {:players {}} (settings pool))))
 
 (defn mutate-pool
   "Generate a new pool, depending on the contents of the message"
@@ -19,7 +26,7 @@
 
     :follow
     (follow-player pool (:player msg))
-    
+
     :ignore
     (ignore-player pool (:player msg))
 
@@ -28,26 +35,29 @@
 (defn gen-report
   "Generate a report based on the contents of the message"
   [pool msg]
-  (case (:cmd msg)
-    :new-game
-    (let [[player-a player-b _] (:score msg)]
-      {:players (lookup-player pool player-a player-b)})
+  (let [report
+        (case (:cmd msg)
+          :new-game
+          (let [[player-a player-b _] (:score msg)]
+            {:players (lookup-player pool player-a player-b)})
 
-    :follow
-    {:following (:player msg)}
+          :follow
+          {:following (:player msg)}
 
-    :ignore
-    {:ignoring (:player msg)}
+          :ignore
+          {:ignoring (:player msg)}
 
-    :rating
-    {:players (lookup-player pool (:player msg))}
+          :rating
+          {:players (lookup-player pool (:player msg))}
 
-    :standings
-    (if-let [n (:number msg)]
-      {:standings (standings pool n)}
-      {:standings (standings pool)})
+          :standings
+          (if-let [n (:number msg)]
+            {:standings (standings pool n)}
+            {:standings (standings pool)})
 
-    {:error msg}))
+          {:error msg})]
+    (let [pool (or (:pool msg) :default)]
+      (assoc report :pool pool))))
 
 (defn spawn-pool-manager
   "Spawn a process which manages the state of a pool of
@@ -75,9 +85,12 @@
            (recur (<! in-chan) pool nil)))
 
      msg
-     (let [pool' (mutate-pool pool msg)
-           report (gen-report pool' msg)
-           undo-state (if (= pool pool') last-state pool)]
+     (let [sub-pool-name (or (:pool msg) :default)
+           sub-pool (get-sub-pool pool sub-pool-name)
+           sub-pool' (mutate-pool sub-pool msg)
+           pool' (assoc pool sub-pool-name sub-pool')
+           report (gen-report sub-pool' msg)
+           undo-state (if (= sub-pool sub-pool') last-state pool)]
        (>! (:new-state out-chans) pool')
        (>! (:player-report out-chans) report)
        (recur (<! in-chan) pool' undo-state))

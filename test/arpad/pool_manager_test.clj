@@ -37,21 +37,21 @@
     (go (>! @in-chan {:cmd :follow
                       :player {:id :bob}}))
     (let [result (get-result-out)]
-      (is (= result {:following {:id :bob}}))))
+      (is (= result {:following {:id :bob}, :pool :default}))))
   (testing "Bob's results are now reported"
     (go (>! @in-chan {:cmd :standings}))
     (let [result (get-result-out)]
-      (is (= (count result) 1))))
+      (is (= (count (:standings result)) 1))))
   (testing "Followed players are reported in game results"
     (go (>! @in-chan {:cmd :new-game
                       :score [{:id :bob} {:id :mary} 0.5]}))
     (let [result (get-result-out)]
-      (is (= (count result) 1))))
+      (is (= (count (:players result)) 1))))
   (testing "Ignore Bob again"
     (go (>! @in-chan {:cmd :ignore
                       :player {:id :bob}}))
     (is (= (get-result-out)
-           {:ignoring {:id :bob}}))
+           {:ignoring {:id :bob} :pool :default}))
     (go (>! @in-chan {:cmd :new-game
                       :score [{:id :bob} {:id :mary} 0.5]}))
     (is (= (count (:players (get-result-out)))
@@ -61,10 +61,10 @@
   (testing "follow karpov and kasparov"
     (go (>! @in-chan {:cmd :follow
                       :player {:id :kasparov}}))
-    (is (= {:following {:id :kasparov}} (get-result-out)))
+    (is (= {:following {:id :kasparov}, :pool :default} (get-result-out)))
     (go (>! @in-chan {:cmd :follow
                       :player {:id :karpov}}))
-    (is (= {:following {:id :karpov}} (get-result-out))))
+    (is (= {:following {:id :karpov}, :pool :default} (get-result-out))))
   (testing "new players draw"
     (go (>! @in-chan {:cmd :new-game
                       :score [{:id :karpov} {:id :kasparov} 0.5]}))
@@ -134,3 +134,20 @@
     (let [result (get-result-out)]
       (is (close? 1000 (get-in result [:players :kasparov :rating])))
       (is (= 0 (get-in result [:players :kasparov :total-games]))))))
+
+(deftest sub-pool-tests
+  (testing "adding players to chess pool"
+    (go (>! @in-chan {:cmd :follow
+                      :player {:id :karpov}
+                      :pool :chess}))
+    (is (= {:following {:id :karpov} :pool :chess}
+           (get-result-out)))
+    (go (>! @in-chan {:cmd :standings :pool :chess}))
+    (let [result (get-result-out)]
+      (is (= 1 (count (:standings result))))
+      (is (= :chess (:pool result)))))
+  (testing "default pool is still empty"
+    (go (>! @in-chan {:cmd :standings}))
+    (let [result (get-result-out)]
+      (is (= 0 (count (:players result))))
+      (is (= :default (:pool result))))))
