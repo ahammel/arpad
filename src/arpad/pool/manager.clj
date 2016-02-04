@@ -13,6 +13,17 @@
     sub-pool
     (merge {:players {}} (settings pool))))
 
+(defn- migrate-pool
+  "Merge players specified at the top level into the specified sub-pool.
+
+  Pools created after on this version or later will not have any
+  players at the top level. This function is only used for the upgrade
+  path."
+  [pool sub-pool-name]
+  (let [sub-pool (get-sub-pool pool sub-pool-name)]
+    (assoc pool sub-pool-name
+           (merge sub-pool {:players (:players pool)}))))
+
 (defn mutate-pool
   "Generate a new pool, depending on the contents of the message"
   [pool msg]
@@ -83,6 +94,13 @@
            (recur (<! in-chan) last-state nil))
        (do (>! (:player-report out-chans) {:error :cannot-undo})
            (recur (<! in-chan) pool nil)))
+
+     (= (:cmd msg) :migrate)
+     (let [sub-pool (:sub-pool msg)
+           new-pool (migrate-pool pool sub-pool)]
+       (>! (:new-state out-chans) new-pool)
+       (>! (:player-report out-chans) {:migrate sub-pool})
+       (recur (<! in-chan) new-pool pool))
 
      msg
      (let [sub-pool-name (or (:pool msg) :default)

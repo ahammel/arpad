@@ -2,7 +2,6 @@
   (:require [arpad.elo :refer [new-ratings]]
             [arpad.k :refer [k-functions]]))
 
-
 (defn settings
   [pool]
   {:k (:k pool)

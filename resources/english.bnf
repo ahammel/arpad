@@ -6,6 +6,7 @@ Command = <Leader> ( NewGame
                    | Undo
                    | Help
                    | ReleaseNotes
+                   | Migrate
                    ) <any*>
 Leader = w* '@'? 'arpad' w* ':'? w*
 
@@ -26,6 +27,8 @@ Help = <w*'help' '!'? w*>
 Player = word
 
 ReleaseNotes = <'release notes'>
+
+Migrate = <'migrate'>
 
 w = #"\s"
 <word> = #"[a-zA-Z0-9\*\+\!\-\_\?]+"
